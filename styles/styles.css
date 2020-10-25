@@ -41,4 +41,20 @@ body {
   max-width: 300px;
   margin: 0 auto;
 }
+
+#sendjson {
+  margin: 10px 10px;
+}
+
+.multiple__input {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
 /*# sourceMappingURL=styles.css.map */

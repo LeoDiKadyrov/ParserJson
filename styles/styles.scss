@@ -37,3 +37,13 @@ body {
 	max-width: 300px;
 	margin: 0 auto;
 }
+
+#sendjson {
+	margin: 10px 10px;
+}
+
+.multiple__input {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}

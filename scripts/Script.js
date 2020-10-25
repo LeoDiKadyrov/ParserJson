@@ -1,83 +1,132 @@
 const mainDiv = document.getElementById("app"),
-    form = document.getElementById("ema-form");
+    form = document.getElementById("ema-form"),
+    buttonSender = document.getElementById('sendjson'),
+    app = document.getElementById('app');
 
 let regex = /^(1\s?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{4}$/;
-    
-let json = (function() {
-    let json = null;
-    $.ajax({
-      'async': false,
-      'global': false,
-      'url': "./json/interview.json",
-      'dataType': "json",
-      'success': function(data) {
-        json = data;
-      }
-    });
-    return json;
-  })();
+// mask(text) {
+//   return (regex).test(text);
+//   }
 
-mainDiv.insertAdjacentHTML("afterbegin", `
-  <h1 class="app-title">${json.name}</h1>
-  ${fieldsParser(json)}
-  ${referencesParser(json)}
-  ${buttonParser(json)}
-`);
+buttonSender.addEventListener('change', function (e) {
+    try {
+        const upload = e.target.files[0];
+        const reader = new FileReader();
+        reader.addEventListener('load', (function (file) {
+            return function (e) {
+                json = JSON.parse(e.target.result);
+                drawForm(json);
+            }
+        })(sendjson));
+        reader.readAsText(upload);
+        app.innerHTML = " ";
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+function drawForm(json) {
+  fieldsParser(json)
+  referencesParser(json)
+  buttonParser(json)  
+}
 
 function fieldsParser(json) {
+  app.insertAdjacentHTML("afterbegin", `
+    <h1 class="app-title">${json.name}</h1> `);
+    
     for (let i = 0; i < json.fields.length; i++) {
       let obj = json.fields[i];
-      console.log(obj.input.mask.length);
-      if (obj.input.required && obj.hasOwnProperty("label")) {
-        form.insertAdjacentHTML("beforeend", `
-          <label>${obj.label}</label>
-          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" pattern="${regex}" maxlength="${obj.input.mask.length}" required><br>
+
+      if (obj.input.hasOwnProperty("technologies")) {
+        multipleInput(obj);
+      }
+      
+      else if (obj.input.hasOwnProperty("filetype")) {
+        app.insertAdjacentHTML("beforeend", `
+        <label>${obj.label}</label>
+        <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" accept=".png, .pdf, .jpeg" required><br>
+      `);
+      }
+
+      else if (obj.input.hasOwnProperty("mask")) {
+        app.insertAdjacentHTML("beforeend", `
+        <label>${obj.label}</label>
+        <input type="${obj.input.type}" placeholder="${obj.input.mask}" pattern="${regex}" required><br>
         `);
-      } else if (obj.input.required && !obj.hasOwnProperty("label")) {
-         form.insertAdjacentHTML("beforeend", `
-         <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" pattern="${regex}" maxlength="${obj.input.mask.length}" required><br>
-        `);
-      } else {
-        form.insertAdjacentHTML("beforeend", `
+      }
+
+      else if (obj.input.required && obj.hasOwnProperty("label")) {
+        app.insertAdjacentHTML("beforeend", `
           <label>${obj.label}</label>
-          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" pattern="${regex}" maxlength="${obj.input.mask.length}"><br>
+          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" required><br>
+        `);
+      } 
+      else if (obj.input.required && !obj.hasOwnProperty("label")) {
+         app.insertAdjacentHTML("beforeend", `
+         <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" required><br>
+        `);
+      } 
+      else {
+        app.insertAdjacentHTML("beforeend", `
+          <label>${obj.label}</label>
+          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}"><br>
         `);
       }
     }
-    form.classList.add("main__form");
+    app.classList.add("main__form");
     return " ";
 }
 
 function referencesParser(json) {
+  let item = document.createElement("div");
+  item.setAttribute("class", "ref__item")
   for (let i = 0; i < json.references.length; i++) {
     let obj = json.references[i];
     if (obj.hasOwnProperty('input')) {
-      form.insertAdjacentHTML("beforeend", `
+      item.insertAdjacentHTML("beforeend", `
         <input type="${obj.input.type}" ${obj.input.required} ${obj.input.checked}>
       `);
     } else {
-      form.insertAdjacentHTML("beforeend" , `
-        <a href="${obj.ref}">${obj.text}</a>
+      item.insertAdjacentHTML("beforeend" , `
+        ${obj["text without ref"] ? obj["text without ref"] : " "}  <a href="${obj.ref}"> ${ obj.text}</a>
       `);
     }
   }
+ app.appendChild(item); 
     return " ";
 }
 
 function buttonParser(json) {
   for (let i = 0; i < json.buttons.length; i++) {
     let obj = json.buttons[i];
-    form.insertAdjacentHTML("beforeend", `
+    app.insertAdjacentHTML("beforeend", `
       <button>${obj.text}</button>
     `);
   }
     return " ";
 }
 
+function multipleInput(obj) {
+      app.insertAdjacentHTML("beforeend", `
+      <label>${obj.label}</label>
+      `);
+      for (let j = 0; j < obj.input.technologies.length; j++) {
+        app.insertAdjacentHTML("beforeend", `
+        <div class="multiple_input">
+          ${obj.input.technologies[j]}<input type="checkbox" required multiple>
+        </div>
+      `);
+    }
+}
+
+
 /* to- do
 1. problem with absenting labels in signup Done
-2. problem with parsing the mask in interview.json
-3. multiple choice in interview.json
+2. problem with parsing the mask in interview.json Done
+3. multiple choice in interview.json Done
+4. colorscheme
+5. styles for beauty and responsive view
 */
 
 
