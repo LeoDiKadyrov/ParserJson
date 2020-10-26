@@ -54,7 +54,7 @@ function fieldsParser(json) {
       else if (obj.input.hasOwnProperty("filetype")) {
         app.insertAdjacentHTML("beforeend", `
         <label>${obj.label}</label>
-        <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" accept=".png, .pdf, .jpeg" required><br>
+        <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" accept=".png, .pdf, .jpeg" required multiple><br>
       `);
       }
 
