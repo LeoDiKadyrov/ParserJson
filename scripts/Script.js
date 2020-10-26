@@ -1,14 +1,22 @@
-const mainDiv = document.getElementById("app"),
-    form = document.getElementById("ema-form"),
-    buttonSender = document.getElementById('sendjson'),
-    app = document.getElementById('app');
+const app = document.getElementById("app"),
+    buttonSender = document.getElementById('upload__button'),
+    hiddenInput = document.getElementById("sendjson"),
+    spanUpload = document.getElementById("upload__span");
 
-let regex = /^(1\s?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{4}$/;
-// mask(text) {
-//   return (regex).test(text);
-//   }
+let regex = /^(1\s?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{4}$/; //regex for telephone number validation
 
-buttonSender.addEventListener('change', function (e) {
+buttonSender.addEventListener('click', function() {
+  hiddenInput.click();
+});
+
+hiddenInput.addEventListener('change', function (e) {
+  if (hiddenInput.value) {
+    spanUpload.innerHTML = hiddenInput.value.match(
+      /[\/\\]([\w\d\s\.\-\(\)]+)$/
+    )[1];
+  } else {
+    spanUpload.innerHTML = "No file chosen, yet.";
+  }
     try {
         const upload = e.target.files[0];
         const reader = new FileReader();
@@ -16,7 +24,7 @@ buttonSender.addEventListener('change', function (e) {
             return function (e) {
                 json = JSON.parse(e.target.result);
                 drawForm(json);
-            }
+            };
         })(sendjson));
         reader.readAsText(upload);
         app.innerHTML = " ";
@@ -26,9 +34,10 @@ buttonSender.addEventListener('change', function (e) {
 });
 
 function drawForm(json) {
-  fieldsParser(json)
-  referencesParser(json)
-  buttonParser(json)  
+  fieldsParser(json);
+  referencesParser(json);
+  buttonParser(json);
+  app.style.padding = "2.5em";
 }
 
 function fieldsParser(json) {
@@ -56,13 +65,13 @@ function fieldsParser(json) {
         `);
       }
 
-      else if (obj.input.required && obj.hasOwnProperty("label")) {
+      else if (requiredLabelChecker(obj)) {
         app.insertAdjacentHTML("beforeend", `
           <label>${obj.label}</label>
-          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" required><br>
+          <input type="${obj.input.type}" placeholder="${obj.input.placeholder ? obj.input.placeholder : " "}" required><br>
         `);
       } 
-      else if (obj.input.required && !obj.hasOwnProperty("label")) {
+      else if (!requiredLabelChecker(obj)) {
          app.insertAdjacentHTML("beforeend", `
          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}" required><br>
         `);
@@ -70,7 +79,7 @@ function fieldsParser(json) {
       else {
         app.insertAdjacentHTML("beforeend", `
           <label>${obj.label}</label>
-          <input type="${obj.input.type}" placeholder="${obj.input.placeholder}"><br>
+          <input type="${obj.input.type}" placeholder="${obj.input.placeholder ? obj.input.placeholder : " "}"><br>
         `);
       }
     }
@@ -80,7 +89,7 @@ function fieldsParser(json) {
 
 function referencesParser(json) {
   let item = document.createElement("div");
-  item.setAttribute("class", "ref__item")
+  item.setAttribute("class", "ref__item");
   for (let i = 0; i < json.references.length; i++) {
     let obj = json.references[i];
     if (obj.hasOwnProperty('input')) {
@@ -101,7 +110,7 @@ function buttonParser(json) {
   for (let i = 0; i < json.buttons.length; i++) {
     let obj = json.buttons[i];
     app.insertAdjacentHTML("beforeend", `
-      <button>${obj.text}</button>
+      <button class="form__buttons">${obj.text}</button>
     `);
   }
     return " ";
@@ -120,13 +129,12 @@ function multipleInput(obj) {
     }
 }
 
+function requiredLabelChecker(obj) {
+    if (obj.hasOwnProperty("label")) {
+      return true;
+    } else { return false; }
+}
 
-/* to- do
-1. problem with absenting labels in signup Done
-2. problem with parsing the mask in interview.json Done
-3. multiple choice in interview.json Done
-4. colorscheme
-5. styles for beauty and responsive view
-*/
+
 
 

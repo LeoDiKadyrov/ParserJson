@@ -18,13 +18,24 @@ body {
 	font-family: Quicksand;
 	font-size: 16px;
 	font-weight: 400;
-	line-height: 27px;
-	color: #333;	
+	line-height: 27px;	
 	margin: 0;
 	scroll-behavior: smooth;
+	background-image: linear-gradient(
+      115deg,
+      rgba(58, 58, 158, 0.8),
+      rgba(136, 136, 206, 0.7)
+    ),
+    url(https://cdn.freecodecamp.org/testable-projects-fcc/images/survey-form-background.jpeg);
 }
 
 // Form
+#app {
+	background-color: #272736;
+    opacity: 0.7;
+
+    min-width: 450px;
+}
 
 .app-title {
 	text-align: center;
@@ -38,12 +49,80 @@ body {
 	margin: 0 auto;
 }
 
+.upload__div {
+	text-align: center;
+}
+
 #sendjson {
-	margin: 10px 10px;
+	display: none;
+}
+
+#upload__button {
+	-webkit-appearance: none;
+  margin: 10px 10px;
+  background: #009879;
+  border: 2px solid #00745d;
+  border-radius: 4px;
+  outline: none;
+  padding: 0.5em 0.8em;
+  margin-right: 15px;
+  color: #ffffff;
+  font-size: 1em;
+  font-family: "Quicksand", sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#upload__button:active {
+	background: #00745d;
+}
+
+#upload__span {
+	max-width: 250px;
+	font-size: 0.95em;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	font-family: "Quicksand", sans-serif;
 }
 
 .multiple__input {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+} 
+
+.form__buttons {
+	margin: 0 auto;
+	min-width: 100px;
+	margin-top: 10px;
+	background-color: brown;
+	border: 2px solid #333;
+	border-radius: 5px;
+	font-family: sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+}
+
+input {
+	border: 2px solid #333;
+	border-radius: 5px;
+}
+
+input[type="file"] {
+	border: hidden;
+}
+
+input::placeholder {
+	color: #333;
+	opacity: 0.5;
+	font-family: sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 27px;
+}
+
+label, a {
+	font-family: monospace;
 }
